@@ -4,7 +4,22 @@
 	<body>
 		<h1> Project 1 </h1>
 		<p>Overview:</p>
-		<p>Task1:</p>
+		<p> Task1:<br>
+		    To rasterize triangles, we sample points on the screen space to see whether that point is within the triangle that is being rasterized. <br>
+		    If the point is within the triangle, the pixel corresponding to that point on the frame buffer will be colored in.<br>
+	 	    <br>
+		    The algorithm I used does this by finding the minimum and maximum x and y coordinates between all the vertices of the triangle, rounding down <br>
+		    on the minimum and rounding up on the maximum. This establishes a box that covers the entire triangle. Then, it iterates over all the points in the box, <br>
+		    sampling at half integer coordinates in screen space. To check whether the sample is within the triangle, the algorithm checks if the sample point <br>
+		    is inside of each of the three lines comprising the edges of the triangle, counting the point as inside the triangle if it is inside all three lines. <br>
+		    However, the line equation can result in either values > 0 or < 0 being considered within the triangle depending on whether we define the lines going <br>
+		    counterclockwise around the vertices or clockwise around the vertices. Since the function doesn't check what direction the lines are formed through, the <br>
+		    algorithm instead checks that all of the line calculations end up greater than or equal to 0, or less than or equal to 0. This way, points within triangle <br>
+		    are marked as such regardless of which direction the vertices were chosen. Finally, if the point is determined to be in the triangle, the corresponding pixel <br>
+		    is filled in the framebuffer.
+		    <br>
+		    This algorithm is the one that checks each sample within the bounding box of the triangle, so for obvious reasons it can't be worse than itself. 
+		</p>
 		<img src="proj1task1.png" alt="Task 1 Test 4 screenshot">
 	</body>
 </html>
