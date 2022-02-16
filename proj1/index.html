@@ -14,9 +14,9 @@
 		    is inside of each of the three lines comprising the edges of the triangle, counting the point as inside the triangle if it is inside all three lines. <br>
 		    However, the line equation can result in either values > 0 or < 0 being considered within the triangle depending on whether we define the lines going <br>
 		    counterclockwise around the vertices or clockwise around the vertices. Since the function doesn't check what direction the lines are formed through, the <br>
-		    algorithm instead checks that all of the line calculations end up greater than or equal to 0, or less than or equal to 0. This way, points within triangle <br>
+		    algorithm instead checks that all of the line calculations end up greater than or equal to 0, or less than or equal to 0. This way, points within the triangle <br>
 		    are marked as such regardless of which direction the vertices were chosen. Finally, if the point is determined to be in the triangle, the corresponding pixel <br>
-		    is filled in the framebuffer.
+		    is filled in the framebuffer.<br>
 		    <br>
 		    This algorithm is the one that checks each sample within the bounding box of the triangle, so for obvious reasons it can't be worse than itself. 
 		</p>
