@@ -3,7 +3,19 @@
 	</head>
 	<body>
 		<h1> Project 1 </h1>
-		<p>Overview:</p>
+		<p>Overview:<br>
+		   At a high level, this project introduced ways to draw images to the screen, and then gradually added new techniques to be used to antialias. <br>
+		   We started out with implementing the most basic triangle rasterization by taking mid pixel samples and categorizing them as within a given triangle or not. <br>
+		   Immediately after that, we added supersampling which conceptually just samples more at finer points in order address the jaggies from the previous implementation. <br>
+		   Task 3 wasn't incredibly related to the other tasks in the project, but it gave a look at how models are constructed in an SVG file and specifically gave a better <br>
+		   understanding of the hierarchical construction of the model. Task 4 required implementing barycentric interpolation to interpolate the colors within triangles by <br>
+		   the colors of the vertices. Then, using that as a foundation, task 5 required barycentric interpolation in order to map positions in screen space to appropriate <br>
+		   locations in texture space in order to sample those textures to project onto the screen space. Task 6 then further builds on this by introducing level mapping with mipmaps <br>
+		   for the textures to address aliasing in the previous texture mapping. It was interesting to build basic solutions, notice potential issues or further applications for those <br>
+		   solutions, and then further adding things to either try to address those issues or to build upon the simpler implementations to do more. 
+		   
+		</p>
+		<p></p>
 		<p> Task1:<br>
 		    To rasterize triangles, we sample points on the screen space to see whether that point is within the triangle that is being rasterized. <br>
 		    If the point is within the triangle, the pixel corresponding to that point on the frame buffer will be colored in.<br>
@@ -82,7 +94,25 @@
 		    With supersampling, since we're already attenuating high frequencies, the two sampling methods become similar in their results. However, it is important to note <br>
 		    that bilinear sampling for antialiasing is much quicker than supersampling with high numbers of samples.
 		</p>
-		
+		<p></p>
+		<p> Task6:<br>
+		    Level sampling approximates the frequency at the screen space coordinate, and uses that approximation in order to choose a mipmap level to sample from. <br>
+		    Higher frequencies will require higher mipmap levels, which would entail a downsampled, lower resolution texture map. By doing this, low frequency spaces <br>
+		    can maintain high resolution sampling, while high frequency spaces can be antialiased with the lower resolution blurring. In this project, I implemented it <br>
+		    by using barycentric interpolation to find the coordinates that map the screen space coordinates (x, y), (x+1, y), and (x, y+1) to texture space. With these, <br>
+		    we could find the rate of change of the texture space coordinates with respect to the x and y coordinates, and with these, we could use the formulas from lecture <br>
+		    to calculate the appropriate mipmap level. Sampling as done in task 5 is then just repeated, though sampling from the appropriate mipmap level. The texture <br>
+		    sampling could be done with either the mipmap level closest to the calculated level, or by doing an interpolation between the levels that are one above and <br>
+		    one below the calculated level.
+		</p>
+		<p> Pixel sampling with bilinear interpolation provides decent antialiasing by doing a weighted average across the nearpy pixels in the texture space, attenuating <br>
+		    the higher frequencies. The memory use isn't more than just the stored texture, though the speed is lowered by the three linear interpolations needed per pixel. <br>
+		    Level sampling also provides antialiasing benefits by matching low frequency areas with high resolution textures and high frequency areas with low resolution textures. <br>
+		    The speed is slowed by the overhead of calculating the mipmap level which at a glance seems to require more operations than the bilinear interpolation. The memory required <br>
+		    is 33% more than that of just the texture alone as extra space is needed for the higher mipmap levels. <br>
+		    Supersampling works well to provide high quality, but it costs a lot as it increases the amount of memory required and the number of operations made by a factor equal <br>
+	            to the number of extra samples. 
+		</p>
 		    
 	</body>
 </html>
