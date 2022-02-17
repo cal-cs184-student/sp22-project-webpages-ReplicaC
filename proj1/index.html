@@ -69,6 +69,19 @@
 		    using the four nearest texture pixels with linear interpolations.
 		</p>
 		<p></p>
+		<img src="task5nearestSample1.png" alt="nearest pixel, 1 sample">
+		<p></p>
+		<img src="task5bilinearSample1.png" alt="bilinear interp, 1 sample">
+		<p> Here we see that with bilinear sampling, there are significantly less jaggies and the line is drawn smoother.</p>
+		<img src="task5nearestSample16.png" alt="nearest pixel, 16 samples">
+		<p></p>
+		<img src="task5bilinearSample16.png" alt="bilinear interp, 16 samples">
+		<p> With supersampling, the differences between the two sampling methods is very minor. </p>
+		<p> There will be a large difference between the two sampling methods when are high frequency changes between sampled pixels in the texture space. <br>
+		    The bilinear sampling will serve to average out the pixel values, attenuating the high frequency changes while nearest pixel sampling will have aliasing. <br>
+		    With supersampling, since we're already attenuating high frequencies, the two sampling methods become similar in their results. However, it is important to note <br>
+		    that bilinear sampling for antialiasing is much quicker than supersampling with high numbers of samples.
+		</p>
 		
 		    
 	</body>
