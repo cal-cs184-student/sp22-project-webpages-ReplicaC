@@ -36,7 +36,17 @@
 		    Supersampling is useful because it can be used for antialiasing. We antialiased here using supersampling and then downsampling, which effectively works as if we <br>
 		    convolved the image by a 1 pixel box blur and then sampled. In both cases, the high frequency changes of the image are attenuated, reducing the amount of aliasing. <br>
 		    <br>
-		    
+		</p>
+		<img src="test4sample1.png" alt="Task 2 Test 4 1 sample">
+		<p> With no supersampling, we observe jaggies when at the edges of the triangle where we quickly change from a filled pixel to an empty pixel </p>
+		<img src="test4sample2.png" alt="Task 2 Test 4 4 sample">
+		<p> With a sample rate a 4, some of the pixels that were on the boundaries of the triangle and were colored either fully or not at all are now averaged to intermediate <br>
+		    colors. Thus, the higher frequency changes are slightly attenuated, reducing the aliasing. </p>
+		<img src="test4sample4.png" alt="Task 2 Test 4 16 sample">
+		<p> This has a sample rate of 16, so the effects are essentially the same as the 4 sample case, but with more accuracy and lowering the high frequency changes further. </p>
+		<p></p>
+		<p> Task3:<br>
+		</p>
 			
 		    
 	</body>
