@@ -21,5 +21,23 @@
 		    This algorithm is the one that checks each sample within the bounding box of the triangle, so for obvious reasons it can't be worse than itself. 
 		</p>
 		<img src="proj1task1.png" alt="Task 1 Test 4 screenshot">
+		<p></p>
+		<p> Task2:<br>
+		    The supersampling algorithm works by iterating through the box bounding the triangle as was done in Task 1, but instead of only sampling the midpoint of <br>
+	            the pixels, it divides each sampled pixel area into N even squares, where N is the sampling rate, and then sampling at the midpoint of each of these squares. <br>
+		    Since the sample rate is restricted to be either 1, 4, 9, or 16, we ignore the case where the sampled area can't be split up into even squares. The sample buffer <br>
+	            now needs to hold N samples for each pixel on the framebuffer, so it is resized to hold a factor N more or less entries whenever the sample rate is changed. <br>
+		    In addition, the fill pixel function now takes in another parameter which is sample, so that in the case of supersampling, N samples are stored at each corresponding <br>
+	            x, y coordinate in the sample buffer. For line and point rasterization, the one taken sample for each point is stored in all N entries for that point, which will average <br>
+	            out to be equivalent to doing one sample for line and point rasterization when it is resolved to the framebuffer. The resolve_to_framebuffer function takes the N samples <br>
+		    for each pixel in the framebuffer and we average their colors out by summing every one of their R, G, and B channels individually, and then dividing them by N. <br>
+		    Finally, it puts that averaged color onto the framebuffer. <br>
+		    <br>
+		    Supersampling is useful because it can be used for antialiasing. We antialiased here using supersampling and then downsampling, which effectively works as if we <br>
+		    convolved the image by a 1 pixel box blur and then sampled. In both cases, the high frequency changes of the image are attenuated, reducing the amount of aliasing. <br>
+		    <br>
+		    
+			
+		    
 	</body>
 </html>
