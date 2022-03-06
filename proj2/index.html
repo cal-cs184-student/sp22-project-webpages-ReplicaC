@@ -35,9 +35,57 @@
 		   The cross product provides the normal vector, and since we're using the edges of the triangle, their lengths are being accounted for in the cross product effectively <br>
 		   weighting the normals by the areas of the triangles.
 		</p>
-		<img src="t3flat.png" alt="Task 3 flat shading">
+		<p>Flat shading</p>
+		<img src="task3flat.png" alt="Task 3 flat shading">
 		<p></p>
-		<img src="t3phong.png" alt="Task 3 phong shading, with the normals">
+		<p>Phong shading</p>
+		<img src="task3phong.png" alt="Task 3 phong shading, with the normals">
+		<p></p>
+		<p>Task 4: <br>
+		   At a very high level, implementing the edge flip involved methodically going through every element in the two triangles (vertices, faces, edges) and updating <br>
+		   their pointers in order for it to match the expected flip. I didn't do anything particularly special other than following the provided step order. The only thing <br>
+	           that wasn't just correct pointer assignment that I did was storing a reference to two particular halfedges that would be needed in a later pointer assignment but would <br>
+		   be lost while doing pointer assignments before reaching that point. The check_for() function was also very useful, as it helped when I ran into a weird bug where my <br>
+		   program was infinitely stalling, which threw me off since there shouldn't have been any loops in the program. What I found out was that I was assigning two halfedges' <br>
+	           next elements to each other on accident because I set them to a sequence of halfedge->next()->next() pointers expecting them to represent certain halfedges. However, <br>
+		   I didn't realize that I was changing halfedge->next()->next() earlier, so they ended up representing halfedges different than what I intended.
+		</p>
+		<p>Preflip teapot:</p>
+		<img src="task4preflip.png" alt="Task 4 before flip">
+		<p></p>
+		<p>Postflips teapot:</p>
+		<img src="task4postflips.png" alt="Task 4 after flips">
+		<p></p>
+		<p>Task 5: <br>
+		   This task was almost identical to the previous task except with slightly more bookkeeping because of the need to create new elements. My implementation basically boils <br>
+	           down to going through every element and changing them to match with the expected outcome. I followed the image of the split triangle provided in the spec from the new vertex <br>
+		   m and just traced through it in my head dozens of times while doing the pointer assignments to get the right element assignments. Debugging was the same was for task 4, but <br>
+		   I didn't make any major errors in my first implementation so debugging was simpler. The only issue I had was splitting would result in correctly appearing edges, but the face <br>
+		   would disappear. It ended up just being a copy and paste of a previous halfedge assignment that I forgot to change properly. <br>
+		   <br>
+		   Extra Credit: <br>
+		   For extra credit, I also implemented support for splitting on boundary edges. My implementation was very simple; if the input edge's halfedge was a boundary edge, <br>
+		   I ignored changing or adding any element that would lie in halfedge's triangle (which would lie in the boundary) and vice versa for if halfedge's twin was a boundary edge. <br>
+		   In practice though, halfedge ended up never being a boundary edge in any of my tests. I could kind of reason why this makes sense in my head, but just in case I kept the <br>
+		   case for halfedge being a boundary edge in.
+		</p>
+		<p>Presplits teapot:</p>
+		<img src="task5presplits.png" alt="Task 5 before splits">
+		<p></p>
+		<p>Postsplits teapot:</p>
+		<img src="task5postsplits.png" alt="Task 5 after splits">
+		<p></p>
+		<p>Presplits and flips cow:</p>
+		<img src="task5preflipssplits.png" alt="Task 5 before splits and flips">
+		<p></p>
+		<p>Postsplits and flips cowt:</p>
+		<img src="task5postflipssplits.png" alt="Task 5 after splits and flips">
+		<p></p>
+		<p>Extra Credit: Presplits and flips beetle boundary:</p>
+		<img src="task5boundarypresplit.png" alt="Task 5 before splits and flips on boundaries">
+		<p></p>
+		<p>Extra Credit: Postsplits and flips beetle boundary:</p>
+		<img src="task5boundarypostsplit.png" alt="Task 5 after splits and flips on boundaries">
 		<p></p>
 	</body>
 </html>
