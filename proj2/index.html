@@ -2,8 +2,14 @@
 	<head>
 	</head>
 	<body>
-		<h1> Project 1 </h1>
+		<h1> Project 2 </h1>
 		<p>Overview:<br></p>
+		   This assignment as a whole introduced different methods of modeling smooth surfaces. It started with Bezier curves in 2D and then expanded that to 3D surfaces with Bezier<br>
+		   curves. Then, we moved onto the next method of modeling with triangle mesh representations. Task 3 introduced us to the halfedge datastructure representation for meshes, <br>
+		   getting us familiar with iterating through all the triangles of the mesh through the halfedges. Task 4 and 5 had us using that knowledge to implement functions that would <br>
+		   be necessary in order to complete task 6, which showed us how to upsample our meshes. It was interesting working with this type of model representation since it was something <br>
+		   that I had no idea about before entering this class and felt like a very novel representation. I was surprised to see how using this halfedge model made doing things easier <br>
+		   than I expected, even though it felt very daunting to wrap my head around in the beginning.
 		<p></p>
 		<p>Task 1: <br>
 		   The De Casteljau algorithm linearly interpolates the points between the points given as input to the algorithm. It continually repeats this process on the newly created<br>
@@ -87,5 +93,76 @@
 		<p>Extra Credit: Postsplits and flips beetle boundary:</p>
 		<img src="task5boundarypostsplit.png" alt="Task 5 after splits and flips on boundaries">
 		<p></p>
+		<p>Task 6: <br>
+		   I implemented loop subdivision following the steps outlined in the spec. First, I iterated over all the vertices in the mesh. Then, for each vertex, I calculate the <br>
+		   the position of the vertex after this current loop subdivision step. This position is calculated dependent on the number of adjacent vertices to the current vertex, <br>
+		   with the formula provided to us here and in lecture. Essentially though, we get a weighted average of the positions of the nearby vertices, including the current one <br>
+	           being operated on, with the weights depending on the formula. The new position is then stored in the current vertex's newPosition variable. This step also sets all <br>
+		   vertices' isNew flag to false for if this is a repeated loop subdivision and there are previously new vertices that are no longer new. After that step, it iterates <br>
+		   through each of the edges in the mesh and similarly calculates the new position in a way similar to previous step. However, this new position is for the vertex that will <br>
+		   be created after the current edge is split, and the edge is storing that position to assign to the new vertex when the splitting step is reached. Of note is that since these <br>
+		   positions are being calculated for the edge split, we know that we will always be calculating a weighted average of 4 adjacent points (except if it's a boundary edge). <br>
+		   Following that step, it iterates through all the edges again, this time splitting every edge and updating the new vertices with the positions calculated and store in the <br>
+		   previous step. In order to not loop infinitely, the loop checks that neither of the vertices of the current edge are a new edge, as that would imply it was an edge that was <br>
+		   created during this subdivision. Also, in preparation for the next step, this loop also labels the newly created edges (that don't include the old edge that was split into two) <br>
+		   so that their isNew value is true. After that, one more iteration through the edges is done, checking every edge where isNew is true, flipping every edge that has only one "new" <br>
+		   vertex, and also setting that edge's isNew to false. Finally, all the vertices have their positions set to the newPosition that was calculated and stored in step 1.<br>
+		   <br>
+		   After loop subdivision, sharp corners and edges become smoothened and much rounder. Conceptually this makes sense, as this algorithm is basically approximating each of the <br>
+	           points with the surrounding points, so protruding vectors will be brought down to a more equal level. If you want to avoid this, you can presplit edges around the corner or <br>
+		   edge that you want to keep sharp. By increasing the number of sample vertices centered around that point, the sharpness is maintained. 
+		</p>
+		<p>Torus pre loop subdivision:</p>
+		<img src="task6torusPreLS.png" alt="Task 6, torus before LS">
+		<p></p>
+		<p>Torus post loop subdivision. Very round and smooth:</p>
+		<img src="task6torusPostLS.png" alt="Task 6, torus after LS">
+		<p></p>
+		<p>Torus pre loop subdivision with many splits at the top:</p>
+		<img src="task6torusSplitPreLS.png" alt="Task 6, torus pre LS with splits">
+		<p></p>
+		<p>Torus with splits post loop subdivision. Top part with splits is noticeabley more sharp, similar to original shape:</p>
+		<img src="task6torusSplitPostLS.png" alt="Task 6, torus after LS with splits">
+		<p></p>
+		<p> When doing iterations of loop subdivision on the cube, the cube becomes asymmetric because the triangles that make up the cube originally do not have an even distribution. </p>
+		<img src="task6cubeFourLS.png" alt="Task 6, cube after 4 loop subdivisions">
+		<p></p>
+		<p>The existing edges on the face of the cube can be flipped to make a mirrored image between two halves of the cube which results in a symmetric object when subdividing.</p>
+		<img src="task6cubeEvened.png" alt="Task 6, cube with evened edges">
+		<p></p>
+		<p>Post loop subdivision:</p>
+		<img src="task6cubeEvenedPostLS.png" alt="Task 6, evened cube after LS">
+		<p></p>
+		<p>Alternatively, the edges can be split to make every face of the cube have 4 equal triangles making them up. This results in a smooth cube shape after loop subdivision.</p>
+		<img src="task6cubeSplit.png" alt="Task 6, cube evenly split">
+		<p></p>
+		<p>Post loop subdivision:</p>
+		<img src="task6cubeSplitPostLS" alt="Task 6, evenly split cube post LS">
+		<p></p>
+		<p> Extra Credit: <br>
+		    I added support for loop subdivision on meshes with boundaries. I used http://www.cs.cmu.edu/afs/cs/academic/class/15462-s14/www/lec_slides/Subdivision.pdf as a source <br>
+		    for finding the formula to use to calculate the new position of vertices on a boundary. These end up being 1/2 of the position of the two adjacent vertices that are on <br>
+		    the same boundary as the current vertex when creating a new vertex with edge splitting. For old vertices being updated, the formula is 3/4 the current position + 1/8 of <br>
+		    the adjacent vertices that are on the same boundary. This is implemented relatively simply into the algorithm, with a checks on the vertices and edges when calculating the <br>
+		    new positions to see whether the elements lie on a boundary or not. If they do, we use the new formulas to calculate the positions, and if not, we use the old formulas as in <br>
+		    the original implementation. One thing to note though is that in my first attempt at this, for calculating the position of an old vertex that was on a boundary, I iterated <br>
+		    through all vertices that were adjacent to that vertex, and if they were on a boundary, I added their positions to the sum of neighbor positions. This implementation broke <br>
+		    under the edge case where the vertex was adjacent to another vertex that was on a boundary, but not the same boundary as the initial vertex. To get around this, I changed the <br>
+		    check to be that I only add an adjacent vertex's position to the sum if that adjacent vertex's edge connecting it to the intial vertex is also on a boundary, which would imply <br>
+		    the two vertices are on the same boundary. 
+		</p>
+		<p>Mesh example that has boundaries:</p>
+		<img src="task6beetle.png" alt="Task 6 EC, beetle mesh with boundaries">
+		<p></p>
+		<p>Performing loop subdivision without boundary handling:</p>
+		<img src="task6beetleNoFix.png" alt="Task 6 EC, beetle mesh with boundaries and no fix">
+		<p></p>
+		<p>Performing loop subdivision with boundary handling:</p>
+		<img src="task6beetleFixedOneLS.png" alt="Task 6 EC, beetle mesh with boundaries and fix, one LS">
+		<p></p>
+		<p>Performing second loop subdivision with boundary handling:</p>
+		<img src="task6beetleFixedTwoLS.png" alt="Task 6 EC, beetle mesh with boundaries and fix, two LS">
+		<p></p>
+		<p> https://cal-cs184-student.github.io/sp22-project-webpages-ReplicaC/proj2/index.html </p>
 	</body>
 </html>
