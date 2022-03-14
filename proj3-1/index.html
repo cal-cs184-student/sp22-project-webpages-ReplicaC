@@ -2,6 +2,40 @@
 	<head>
 	</head>
 	<body>
-		Project 3-1 here
+		<h1> Project 3-1 </h1>
+		<p>Overview:<br>
+		   
+		</p>
+		<p></p>
+		<p> Task1:<br>
+		    To begin with, the ray generation required a couple transformations from the normalized image space, to camera space, and then to world space. First, <br>
+		    we notice that from image space to camera space, the center of the viewing window goes from (0.5, 0.5) in the x, y coordinates to (0, 0) in the x, y <br>
+		    coordinates, so we can see that a translation of (-0.5, -0.5) happens. Also, the viewing window is 2 * (tan(0.5 * hFov)) wider and 2 * (tan(0.5 * vFov) <br>
+		    taller, so we also know to use those values for the scaling. We put these values into separate translation and scaling matrices and then multiply them <br>
+		    together in order to get the transformation matrix for image space to camera space. Using this transformation matrix, we can multiply the normalized <br>
+		    image coordinates (with a 1 for its z-coordinate) in order to get the image coordinate transformed to camera space. Finally we set the result's z coord <br>
+		    to -1, since it will lie in the virtual camera sensor. Normalizing this vector, we can use it as the direction vector for our camera ray, with the pos <br>
+		    of the camera used to define the origin of the ray in world space. Next, we just multiply the direction vector with the c2w matrix in order to transform <br>
+		    it from camera space to world space, which ultimately gives us the ray in world space in conjunction with the camera's world position defined in pos. <br>
+		    <br>
+	            To estimate the illumination of a pixel, we use Monte Carlo integration, getting ns_aa number of samples from a random position in the bounds of the <br>
+		    pixel's (x + [0,1],y+ [0,1]). We scale down this ocoordinate by dividing its x by sampleBuffer.w and y by sampleBuffer.h to put it into normalized image <br>
+		    space, and then pass this coordinate into the ray generation function, which is then used in the global illumination estimate function. This result is added <br>
+		    to the sum, which is divided at the end by ns_aa to calculate the approximation of the illumination of the pixel. <br>
+		    <br>
+		    For triangle intersection, I used the Möller Trumbore algorithm to calclulate the intersection of the triangle. By following the equations laid out in the <br>
+		    lecture, the calculations ultimately give you a t, which is the time of intersection with the plane that the triangle lies in, b1, b2, and b0 = 1 - b1 - b2. <br>
+		    b0, b1, and b2 represent barycentric coordinates of the triangle, so we can check if the triangle is intersected by the ray if 1. the t value lies within the <br>
+		    min and max t of the ray, and 2, all the barycentric coordinates are positive. If it does in fact intersect, we can populate the values of the provided Intersection <br>
+		    with the appropriate values, the most notable of which is the normal coordinate which is calculated using barycentric interpolation with the b's and the normals <br>
+		    at the points of the triangle.<br>
+		    <br>
+		    Sphere intersection was implemented by once again following the equations provided in lecture. At the end, the calculations result in two t values from solving <br>
+		    the quadratic equation (if the quadratic equation results in a negative square root, we say there is no intersection). Starting with the smaller t value (which <br>
+		    implies a closer intersection), we check if the v is within the range of the ray's min and max t, and if it is, we populate Intersection appropriatley, calculating <br>
+		    the normal by getting the ray from the sphere's center to the point of intersection and then normalizing that. Also of note is that in both sphere and triangle <br>
+		    intersection, we're updating the ray's max_t to be the latest point of intersection so that we are never rendering something that is further behind something we've <br>
+		    already intersected.
+		</p>
 	</body>
 </html>
