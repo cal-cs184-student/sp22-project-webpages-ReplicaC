@@ -46,6 +46,49 @@
 		<p>Banana</p>
 		<img src="task1banana.png" alt="banana">
 		<p></p>
+		<p>Task 2: <br>
+		   The bvh construction algorithm that I used is a recursive algorithm. It starts by establishing a bounding box for the node currently being created using nodes encompassed <br>
+		   by the input start and end. It then creates a new bvh node using this bounding box. The next step is determined by whether this current node is a leaf node or not, which <br>
+		   is determined by how many primitives are in the node, and is checked by seeing if the node's end - start is less than or equal to the max leaf size. If it is, then the <br>
+		   node's start and end are set to the input start and end, its left and right children are set to null, and the node is returned, ending the recursion. Otherwise, the <br>
+		   node is not a leaf node and needs to be further partitioned. To do this, it first decides what the longest axis is by checking the extent of the bounding box object. <br>
+		   This longest axis will be chosen as the axis to be splitting upon. For choosing the actual split point on this axis, it takes the average position on this axis of all <br>
+		   the primitives in this bounding box and uses this as the splitting point. (Originally I used the midpoint of the bounding box on the axis as the split point, but this lead <br>
+		   to a stack overflow on generating the bvh for CBlucy.) After getting the split point, it uses std::partition to partition within the range of start and end, where what side <br>
+		   of the partition a primitive is on is determined by comparing that primitive's centroid's position on the axis to the split point, placing the primitive in one partition if <br>
+		   it's lower than the split point, and the other partition if it is higher. With the primitives partitioned, the next recursive is started by assigning the current node's <br>
+		   left child to another call of this function, except only ranging from the input start point to the newly calculated mid point. Similarly, the right child is assigned to <br>
+		   another call of the function with a range from the mid primitive to the end. To cover for the edge case where a partition would leave one partition empty, at a minimum, <br>
+		   the start primitive is always placed into one partition, while the end primitive is always placed into the other one.
+		</p>
+		<p>Peter</p>
+		<img src="task2peter.png" alt="peter">
+		<p>MaxPlanck</p>
+		<img src="task2maxplanck.png" alt="maxplanck">
+		<p>Lucy</p>
+	        <img src="task2lucy.png" alt="lucy">
+		<p></p>
+		<p> Rendered with 8 cores and resolution of 800 x 600: <br>
+		    <br>
+		    Banana: <br>
+		    Without bvh: 13.4015s <br>
+		    With bvh: 0.0987s <br>
+					    <br>
+		    Cow: <br>
+		    Without bvh: 31.9632s <br>
+		    With bvh: 0.1180 <br>
+					    <br>
+		    Bunny: <br>
+		    Without bvh: 269.5522s <br>
+		    With bvh: 0.1459s <br>
+		    <br>
+		    There's an obviously massive speed up here in all the cases. Importantly, the rendering time does not increase nearly as much in relation to the number of primitives <br>
+		    compared to without bvh acceleration. As expected, it seems that the rendering goes from ~O(N) in relation to primitives to about O(log2(N)). This can be seen in the <br>
+		    cow and bunny render, where the cow has about 5000 primitives, and gets a speed up of around 5000/log2(5000). The bunny render has around 33000 primitives and gets a <br>
+		    similar result. 
+		</p>
 		
+		
+		    
 	</body>
 </html>
