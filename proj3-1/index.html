@@ -124,11 +124,84 @@
 		<p>CBbunny with importance sampling, l 64 and s 1</p>
 		<img src="task3bunnyl64.png" alt="bunny 64 1">
 		<p></p>
+		<p>The noise goes down as the number of light rays goes up, as expected.</p>
 		<p>Although uniform hemisphere sampling and importance sampling using the lights get their estimates in similar ways, ultimately the lighting sampling works much better. Since <br>
 		   hemisphere sampling ends up testing so many rays that don't intersect any lighting, many of the samples aren't of much use to the estimation, meaning more samples on average <br>
 		   are needed to reduce the noise, in comparison to importance sampling, which insures that each of the samples is being taken from a light source. <br>
 		</p>
-		
+		<p></p>
+		<p>Task 4:<br>
+		   My implementation follows very closely to the one presented in lecture. First, we establish the probability of continuing when in the russian roulette termination stage as <br>
+		   continue_p = 1 - 0.35. It sets the base radiance to return as the radiance from one single bounce. We'll return this radiance plus the radiance of any possible future bounces. <br>
+		   Next, we use the sample_f function of the inputed isect's bsdf in order to generate an f for the calculation of possible bounces, as well as generating a random direction, wi, <br>
+		   along with the pdf for that wi. We transform that direction wi to world space by multiplying it by the transform matrix o2w, and then use that direction as well as the position <br>
+		   of the hit to create a new ray. This ray's min_t is set to EPS_F for error avoidance purposes, and its depth is set to the input ray's depth - 1 in order to simulate a bounce <br>
+		   having occurred. In order to avoid any overflow errors, if the input ray's depth is 0, we set the new ray's depth to also be 0. After the ray's construction, we check to see if <br>
+		   it intersects the bvh. If it does, then that means that we might possibly add in a bounce radiance term. Specifically, if the depth of the input ray is above 1, we will guarantee <br>
+		   bounce, which is adding f (calculated earlier) * cos_theta(wi) (where wi is in object space) / pdf (calculated earlier with f) * a recursive call to at_least_one_bounce_radiance <br>
+		   using the newly generated ray and intersect data as inputs. Furthermore, if the depth of the input ray is <= 1, we then start probabilistically adding bounce radiances using  <br>
+		   russian roulette termination and the continue_p calculated earlier. Specifically, if coin_flip(continue_p) is true, we add a bounce radiance calculated in the same way as above. <br>
+		   Crucially however, in that calculation, we also add another division by continue_p in order to keep the estimate unbiased. Once all the recursion has finished, the function will <br>
+		   output the radiance at the intersection with some random bounce radiance also added. <br>
+		   <br>
+		</p>
+		<p>Bench with global lighting</p>
+		<img src="task4bench1024s.png" alt="bench">
+		<p>Dragon with global lighting</p>
+		<img src="task4dragon1024s.png" alt="dragon">
+		<p>Wall-e with global lighting</p>
+	        <img src="task4walle1024s.png" alt="walle">
+		<p></p>
+		<p>Spheres, only direct lighting</p>
+		<img src="task4sphere1024sDirect.png" alt="spheres direct">
+		<p>Spheres, only indirect lighting</p>
+		<img src="task4sphere1024sIndirect.png" alt="spheres indirect">
+		<p></p>
+		<p>Bunny m = 0</p>
+		<img src="task4bunny1024s0m.png" alt="bunny 0m">
+		<p>Bunny m = 1</p>
+		<img src="task4bunny1024s1m.png" alt="bunny 1m">
+		<p>Bunny m = 2</p>
+		<img src="task4bunny1024s2m.png" alt="bunny 2m">
+		<p>Bunny m = 3</p>
+		<img src="task4bunny1024s3m.png" alt="bunny 3m">
+		<p>Bunny m = 100</p>
+		<img src="task4bunny1024s100m.png" alt="bunny 100m">
+		<p> m = 0 wasn't really defined so I chose it to mean the zero bounce emission only. All of these images look nearly identical, which I believe should be expected behavior based <br>
+		    on how there's little light sources in this image and the diminishing amount of light from subsequent bounces. <br>
+		</p>
+		<p>Spheres s = 1</p>
+		<img src="task4sphere1s.png" alt="spheres 1s">
+		<p>Spheres s = 2</p>
+		<img src="task4sphere2s.png" alt="spheres 2s">
+		<p>Spheres s = 4</p>
+		<img src="task4sphere4s.png" alt="spheres 4s">
+		<p>Spheres s = 8</p>
+		<img src="task4sphere8s.png" alt="spheres 8s">
+		<p>Spheres s = 16</p>
+		<img src="task4sphere16s.png" alt="spheres 16s">
+		<p>Spheres s = 64</p>
+		<img src="task4sphere64s.png" alt="spheres 64s">
+		<p>Spheres s = 1024</p>
+		<img src="task4sphere1024s.png" alt="spheres 1024s">
+		<p> As should be expected, as the number of samples goes up, the noise goes down. </p>
+		<p></p>
+		<p>Task 5:<br>
+		   The adaptive sampling is done by adding a few calculations during the radiance sample taking in raytrace_pixel. Outside of the loop for the ray generation, we initialize values <br>
+		   for the number of samples that have been taken, s1, and s2 all to 0. Generally, the function doesn't do anything new except increment the sampleNum on every loop, adds the sampled<br>
+		   radiance to s1, and adds the sampled radiance squared to s2. However, when the loop index % samplesPerBatch (meaning we check every samplesPerBatch iterations) and the sampleNum > 1, <br>
+		   we calculate a value I as outlined in the project spec. We define a variable sigma to equal the square root of ( 1 / (sampleNum - 1)) * (s2 - (s1^2 / sampleNum)). Then, we set I <br>
+		   to 1.96 * sigma / (sqrt(sampleNum)). Then, if I is less than or equal to the value maxTolerance * mu, where mu is equal to s1 / sampleNum, then we break out of the radiance estimation <br>
+		   loop. Then, when writing the radiance to the sample buffer, we divide the total sum of the radiance by sampleNum instead of ns_aa. Similarly, we set sampleCountBuffer's value at this <br>
+		   pixel to sampleNum. Conceptually, what this algorithm is doing is seeing if the estimation has converged to some value within our tolerance and terminates the estimation early if this <br>
+		   is the case.
+		</p>
+	        <p>Spheres s = 2048</p>
+		<img src="task4sphere2048sAdaptive.png" alt="spheres 2048s">
+	        <p>Spheres sample rate</p>
+		<img src="task4sphere2048sAdaptive_rate.png" alt="spheres 2048s rate">
+		<p></p>
+		<p>https://cal-cs184-student.github.io/sp22-project-webpages-ReplicaC/proj3-1/index.html</p>
 		    
 	</body>
 </html>
