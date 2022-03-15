@@ -87,7 +87,47 @@
 		    cow and bunny render, where the cow has about 5000 primitives, and gets a speed up of around 5000/log2(5000). The bunny render has around 33000 primitives and gets a <br>
 		    similar result. 
 		</p>
-		
+		<p></p>
+		<p>Task 3: <br>
+		   The hemisphere direct lighting implementation works by doing a Monte Carlo estimation for the lighting. It gets num_samples samples of the lighting by first picking a point <br>
+		   on a hemisphere uniformly randomly. It creates an array that has origin hit_p, where the camera ray hits, and direction world_w_j, which is the ranodmly selected vector <br>
+		   translated to world space by multiplying by the transformation matrix o2w. Finally, we check if that ray intersects a primitive in the bvh. If it does, we calculate the <br>
+		   sample lighting by multiplying the f of the original input's intersection's bsdf, the new ray intersect's emission value, and cos_j, which is calculated with the dot product <br>
+		   of the randomly chosen vector and the original intersect's normal. We then sum the num_samples samples together and then divide them by num_samples in order to get the average.<br>
+		   Then, we divide by the probability of each of the samples, which is 1/2 * pi for each of them since we are sampling uniformly randomly. This is equivalent to multiplying the <br>
+		   averaged samples by 2pi. Finally, we return that final calculation as the estimated lighting. <br>
+			<br>
+		   The importance sampling is relatively similar to the hemisphere lighting. The main difference is that we sample each of the lights in the scene ns_area_light times (unless it's <br>
+		   a point light). In order to get a light's emission on the intersect point, we call the function sample_L on the light, using hit_p as the position, and ultimately giving us the <br>
+		   emission at that point, as well as the direction towards the light from hit_p (wi), the distance to the light, and the pdf for that random sample. A ray is created similar to the <br>
+		   hemisphere estimation using hit_p as the origin and the returned wi as the direction. Importantly, we also set the ray's max_t to distToLight - EPS_F. Since we know wi is a <br>
+		   vector, this means that if this ray intersects anything in the bvh, there is an object blocking the light to the hit point. But if there's no intersection, then we proceed as <br>
+		   normal, adding the result of the initial intersection's bsdf->f * the emitted radiance returned by sample_L * cos_j, calculated in the same way as for the hemisphere. However, <br>
+		   since the probabilities are no longer the same for every sample, we know divide the individual sample's results by the pdf returned by sample_L. Finally, as before, we average <br>
+		   all the samples and return that as the estimated lighting of the intersection point. <br>
+		</p>
+		<p>Spheres with hemisphere</p>
+		<img src="task3spheresHemisphere.png" alt="spheres h">
+		<p>Spheres with importance</p>
+		<img src="task3spheresImportance.png" alt="spheres i">
+		<p>CBbunny with hemisphere</p>
+	        <img src="task3bunnyHemisphere.png" alt="bunny h">
+		<p>CBbunny with importance</p>
+		<img src="task3bunnyImportance.png" alt="bunny i">
+		<p></p>
+		<p>CBbunny with importance sampling, l 1 and s 1</p>
+		<img src="task3bunnyl1.png" alt="bunny l 1">
+		<p>CBbunny with importance sampling, l 4 and s 1</p>
+		<img src="task3bunnyl4.png" alt="bunny l 4">
+		<p>CBbunny with importance sampling, l 16 and s 1</p>
+		<img src="task3bunnyl16.png" alt="bunny 16 1">
+		<p>CBbunny with importance sampling, l 64 and s 1</p>
+		<img src="task3bunnyl64.png" alt="bunny 64 1">
+		<p></p>
+		<p>Although uniform hemisphere sampling and importance sampling using the lights get their estimates in similar ways, ultimately the lighting sampling works much better. Since <br>
+		   hemisphere sampling ends up testing so many rays that don't intersect any lighting, many of the samples aren't of much use to the estimation, meaning more samples on average <br>
+		   are needed to reduce the noise, in comparison to importance sampling, which insures that each of the samples is being taken from a light source. <br>
+		</p>
 		
 		    
 	</body>
