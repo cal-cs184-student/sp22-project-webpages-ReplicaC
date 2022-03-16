@@ -4,40 +4,41 @@
 	<body>
 		<h1> Project 3-1 </h1>
 		<p>Overview:<br>
-		   In this project, we basically build up to implementing global illumination by starting with implementing the building blocks, creating rays, sampling <br>
-		   pixels, and intersecting primitive objects. We speed up intersection tests with BVH structures, then begin implementing direct illumination. Then with <br>
-		   direct lighting implemented, we can use that to recursively calculate bounce lighting, which provides our global illumination. Finally, we put in a <br>
+		   In this project, we basically build up to implementing global illumination by starting with implementing the building blocks, creating rays, sampling
+		   pixels, and intersecting primitive objects. We speed up intersection tests with BVH structures, then begin implementing direct illumination. Then with 
+		   direct lighting implemented, we can use that to recursively calculate bounce lighting, which provides our global illumination. Finally, we put in a
 		   slight optimization to stop sampling unnecessarily when we've converged to a clean result for a given point already.
 		</p>
 		<p></p>
 		<p> Task1:<br>
-		    To begin with, the ray generation required a couple transformations from the normalized image space, to camera space, and then to world space. First, <br>
-		    we notice that from image space to camera space, the center of the viewing window goes from (0.5, 0.5) in the x, y coordinates to (0, 0) in the x, y <br>
-		    coordinates, so we can see that a translation of (-0.5, -0.5) happens. Also, the viewing window is 2 * (tan(0.5 * hFov)) wider and 2 * (tan(0.5 * vFov) <br>
-		    taller, so we also know to use those values for the scaling. We put these values into separate translation and scaling matrices and then multiply them <br>
-		    together in order to get the transformation matrix for image space to camera space. Using this transformation matrix, we can multiply the normalized <br>
-		    image coordinates (with a 1 for its z-coordinate) in order to get the image coordinate transformed to camera space. Finally we set the result's z coord <br>
-		    to -1, since it will lie in the virtual camera sensor. Normalizing this vector, we can use it as the direction vector for our camera ray, with the pos <br>
-		    of the camera used to define the origin of the ray in world space. Next, we just multiply the direction vector with the c2w matrix in order to transform <br>
-		    it from camera space to world space, which ultimately gives us the ray in world space in conjunction with the camera's world position defined in pos. <br>
-		    <br>
-	            To estimate the illumination of a pixel, we use Monte Carlo integration, getting ns_aa number of samples from a random position in the bounds of the <br>
-		    pixel's (x + [0,1],y+ [0,1]). We scale down this ocoordinate by dividing its x by sampleBuffer.w and y by sampleBuffer.h to put it into normalized image <br>
-		    space, and then pass this coordinate into the ray generation function, which is then used in the global illumination estimate function. This result is added <br>
+		    To begin with, the ray generation required a couple transformations from the normalized image space, to camera space, and then to world space. First,
+		    we notice that from image space to camera space, the center of the viewing window goes from (0.5, 0.5) in the x, y coordinates to (0, 0) in the x, y 
+		    coordinates, so we can see that a translation of (-0.5, -0.5) happens. Also, the viewing window is 2 * (tan(0.5 * hFov)) wider and 2 * (tan(0.5 * vFov) 
+		    taller, so we also know to use those values for the scaling. We put these values into separate translation and scaling matrices and then multiply them 
+		    together in order to get the transformation matrix for image space to camera space. Using this transformation matrix, we can multiply the normalized 
+		    image coordinates (with a 1 for its z-coordinate) in order to get the image coordinate transformed to camera space. Finally we set the result's z coord
+		    to -1, since it will lie in the virtual camera sensor. Normalizing this vector, we can use it as the direction vector for our camera ray, with the pos
+		    of the camera used to define the origin of the ray in world space. Next, we just multiply the direction vector with the c2w matrix in order to transform 
+		    it from camera space to world space, which ultimately gives us the ray in world space in conjunction with the camera's world position defined in pos.<br>
+			<br>
+		    
+	            To estimate the illumination of a pixel, we use Monte Carlo integration, getting ns_aa number of samples from a random position in the bounds of the 
+		    pixel's (x + [0,1],y+ [0,1]). We scale down this ocoordinate by dividing its x by sampleBuffer.w and y by sampleBuffer.h to put it into normalized image 
+		    space, and then pass this coordinate into the ray generation function, which is then used in the global illumination estimate function. This result is added
 		    to the sum, which is divided at the end by ns_aa to calculate the approximation of the illumination of the pixel. <br>
 		    <br>
-		    For triangle intersection, I used the Möller Trumbore algorithm to calclulate the intersection of the triangle. By following the equations laid out in the <br>
-		    lecture, the calculations ultimately give you a t, which is the time of intersection with the plane that the triangle lies in, b1, b2, and b0 = 1 - b1 - b2. <br>
-		    b0, b1, and b2 represent barycentric coordinates of the triangle, so we can check if the triangle is intersected by the ray if 1. the t value lies within the <br>
-		    min and max t of the ray, and 2, all the barycentric coordinates are positive. If it does in fact intersect, we can populate the values of the provided Intersection <br>
-		    with the appropriate values, the most notable of which is the normal coordinate which is calculated using barycentric interpolation with the b's and the normals <br>
+		    For triangle intersection, I used the Möller Trumbore algorithm to calclulate the intersection of the triangle. By following the equations laid out in the
+		    lecture, the calculations ultimately give you a t, which is the time of intersection with the plane that the triangle lies in, b1, b2, and b0 = 1 - b1 - b2.
+		    b0, b1, and b2 represent barycentric coordinates of the triangle, so we can check if the triangle is intersected by the ray if 1. the t value lies within the 
+		    min and max t of the ray, and 2, all the barycentric coordinates are positive. If it does in fact intersect, we can populate the values of the provided Intersection 
+		    with the appropriate values, the most notable of which is the normal coordinate which is calculated using barycentric interpolation with the b's and the normals 
 		    at the points of the triangle.<br>
 		    <br>
-		    Sphere intersection was implemented by once again following the equations provided in lecture. At the end, the calculations result in two t values from solving <br>
-		    the quadratic equation (if the quadratic equation results in a negative square root, we say there is no intersection). Starting with the smaller t value (which <br>
-		    implies a closer intersection), we check if the v is within the range of the ray's min and max t, and if it is, we populate Intersection appropriatley, calculating <br>
-		    the normal by getting the ray from the sphere's center to the point of intersection and then normalizing that. Also of note is that in both sphere and triangle <br>
-		    intersection, we're updating the ray's max_t to be the latest point of intersection so that we are never rendering something that is further behind something we've <br>
+		    Sphere intersection was implemented by once again following the equations provided in lecture. At the end, the calculations result in two t values from solving 
+		    the quadratic equation (if the quadratic equation results in a negative square root, we say there is no intersection). Starting with the smaller t value (which 
+		    implies a closer intersection), we check if the v is within the range of the ray's min and max t, and if it is, we populate Intersection appropriatley, calculating 
+		    the normal by getting the ray from the sphere's center to the point of intersection and then normalizing that. Also of note is that in both sphere and triangle 
+		    intersection, we're updating the ray's max_t to be the latest point of intersection so that we are never rendering something that is further behind something we've 
 		    already intersected.
 		</p>
 		<p>Spheres</p>
@@ -50,18 +51,18 @@
 		<img src="task1banana.png" alt="banana">
 		<p></p>
 		<p>Task 2: <br>
-		   The bvh construction algorithm that I used is a recursive algorithm. It starts by establishing a bounding box for the node currently being created using nodes encompassed <br>
-		   by the input start and end. It then creates a new bvh node using this bounding box. The next step is determined by whether this current node is a leaf node or not, which <br>
-		   is determined by how many primitives are in the node, and is checked by seeing if the node's end - start is less than or equal to the max leaf size. If it is, then the <br>
-		   node's start and end are set to the input start and end, its left and right children are set to null, and the node is returned, ending the recursion. Otherwise, the <br>
-		   node is not a leaf node and needs to be further partitioned. To do this, it first decides what the longest axis is by checking the extent of the bounding box object. <br>
-		   This longest axis will be chosen as the axis to be splitting upon. For choosing the actual split point on this axis, it takes the average position on this axis of all <br>
-		   the primitives in this bounding box and uses this as the splitting point. (Originally I used the midpoint of the bounding box on the axis as the split point, but this lead <br>
-		   to a stack overflow on generating the bvh for CBlucy.) After getting the split point, it uses std::partition to partition within the range of start and end, where what side <br>
-		   of the partition a primitive is on is determined by comparing that primitive's centroid's position on the axis to the split point, placing the primitive in one partition if <br>
-		   it's lower than the split point, and the other partition if it is higher. With the primitives partitioned, the next recursive is started by assigning the current node's <br>
-		   left child to another call of this function, except only ranging from the input start point to the newly calculated mid point. Similarly, the right child is assigned to <br>
-		   another call of the function with a range from the mid primitive to the end. To cover for the edge case where a partition would leave one partition empty, at a minimum, <br>
+		   The bvh construction algorithm that I used is a recursive algorithm. It starts by establishing a bounding box for the node currently being created using nodes encompassed 
+		   by the input start and end. It then creates a new bvh node using this bounding box. The next step is determined by whether this current node is a leaf node or not, which
+		   is determined by how many primitives are in the node, and is checked by seeing if the node's end - start is less than or equal to the max leaf size. If it is, then the 
+		   node's start and end are set to the input start and end, its left and right children are set to null, and the node is returned, ending the recursion. Otherwise, the
+		   node is not a leaf node and needs to be further partitioned. To do this, it first decides what the longest axis is by checking the extent of the bounding box object.
+		   This longest axis will be chosen as the axis to be splitting upon. For choosing the actual split point on this axis, it takes the average position on this axis of all
+		   the primitives in this bounding box and uses this as the splitting point. (Originally I used the midpoint of the bounding box on the axis as the split point, but this lead 
+		   to a stack overflow on generating the bvh for CBlucy.) After getting the split point, it uses std::partition to partition within the range of start and end, where what side 
+		   of the partition a primitive is on is determined by comparing that primitive's centroid's position on the axis to the split point, placing the primitive in one partition if 
+		   it's lower than the split point, and the other partition if it is higher. With the primitives partitioned, the next recursive is started by assigning the current node's 
+		   left child to another call of this function, except only ranging from the input start point to the newly calculated mid point. Similarly, the right child is assigned to 
+		   another call of the function with a range from the mid primitive to the end. To cover for the edge case where a partition would leave one partition empty, at a minimum, 
 		   the start primitive is always placed into one partition, while the end primitive is always placed into the other one.
 		</p>
 		<p>Peter</p>
@@ -85,29 +86,29 @@
 		    Without bvh: 269.5522s <br>
 		    With bvh: 0.1459s <br>
 		    <br>
-		    There's an obviously massive speed up here in all the cases. Importantly, the rendering time does not increase nearly as much in relation to the number of primitives <br>
-		    compared to without bvh acceleration. As expected, it seems that the rendering goes from ~O(N) in relation to primitives to about O(log2(N)). This can be seen in the <br>
-		    cow and bunny render, where the cow has about 5000 primitives, and gets a speed up of around 5000/log2(5000). The bunny render has around 33000 primitives and gets a <br>
+		    There's an obviously massive speed up here in all the cases. Importantly, the rendering time does not increase nearly as much in relation to the number of primitives
+		    compared to without bvh acceleration. As expected, it seems that the rendering goes from ~O(N) in relation to primitives to about O(log2(N)). This can be seen in the 
+		    cow and bunny render, where the cow has about 5000 primitives, and gets a speed up of around 5000/log2(5000). The bunny render has around 33000 primitives and gets a 
 		    similar result. 
 		</p>
 		<p></p>
 		<p>Task 3: <br>
-		   The hemisphere direct lighting implementation works by doing a Monte Carlo estimation for the lighting. It gets num_samples samples of the lighting by first picking a point <br>
-		   on a hemisphere uniformly randomly. It creates an array that has origin hit_p, where the camera ray hits, and direction world_w_j, which is the ranodmly selected vector <br>
-		   translated to world space by multiplying by the transformation matrix o2w. Finally, we check if that ray intersects a primitive in the bvh. If it does, we calculate the <br>
-		   sample lighting by multiplying the f of the original input's intersection's bsdf, the new ray intersect's emission value, and cos_j, which is calculated with the dot product <br>
-		   of the randomly chosen vector and the original intersect's normal. We then sum the num_samples samples together and then divide them by num_samples in order to get the average.<br>
-		   Then, we divide by the probability of each of the samples, which is 1/2 * pi for each of them since we are sampling uniformly randomly. This is equivalent to multiplying the <br>
+		   The hemisphere direct lighting implementation works by doing a Monte Carlo estimation for the lighting. It gets num_samples samples of the lighting by first picking a point 
+		   on a hemisphere uniformly randomly. It creates an array that has origin hit_p, where the camera ray hits, and direction world_w_j, which is the ranodmly selected vector
+		   translated to world space by multiplying by the transformation matrix o2w. Finally, we check if that ray intersects a primitive in the bvh. If it does, we calculate the 
+		   sample lighting by multiplying the f of the original input's intersection's bsdf, the new ray intersect's emission value, and cos_j, which is calculated with the dot product 
+		   of the randomly chosen vector and the original intersect's normal. We then sum the num_samples samples together and then divide them by num_samples in order to get the average.
+		   Then, we divide by the probability of each of the samples, which is 1/2 * pi for each of them since we are sampling uniformly randomly. This is equivalent to multiplying the 
 		   averaged samples by 2pi. Finally, we return that final calculation as the estimated lighting. <br>
 			<br>
-		   The importance sampling is relatively similar to the hemisphere lighting. The main difference is that we sample each of the lights in the scene ns_area_light times (unless it's <br>
-		   a point light). In order to get a light's emission on the intersect point, we call the function sample_L on the light, using hit_p as the position, and ultimately giving us the <br>
-		   emission at that point, as well as the direction towards the light from hit_p (wi), the distance to the light, and the pdf for that random sample. A ray is created similar to the <br>
-		   hemisphere estimation using hit_p as the origin and the returned wi as the direction. Importantly, we also set the ray's max_t to distToLight - EPS_F. Since we know wi is a <br>
-		   vector, this means that if this ray intersects anything in the bvh, there is an object blocking the light to the hit point. But if there's no intersection, then we proceed as <br>
-		   normal, adding the result of the initial intersection's bsdf->f * the emitted radiance returned by sample_L * cos_j, calculated in the same way as for the hemisphere. However, <br>
-		   since the probabilities are no longer the same for every sample, we know divide the individual sample's results by the pdf returned by sample_L. Finally, as before, we average <br>
-		   all the samples and return that as the estimated lighting of the intersection point. <br>
+		   The importance sampling is relatively similar to the hemisphere lighting. The main difference is that we sample each of the lights in the scene ns_area_light times (unless it's 
+		   a point light). In order to get a light's emission on the intersect point, we call the function sample_L on the light, using hit_p as the position, and ultimately giving us the
+		   emission at that point, as well as the direction towards the light from hit_p (wi), the distance to the light, and the pdf for that random sample. A ray is created similar to the
+		   hemisphere estimation using hit_p as the origin and the returned wi as the direction. Importantly, we also set the ray's max_t to distToLight - EPS_F. Since we know wi is a
+		   vector, this means that if this ray intersects anything in the bvh, there is an object blocking the light to the hit point. But if there's no intersection, then we proceed as 
+		   normal, adding the result of the initial intersection's bsdf->f * the emitted radiance returned by sample_L * cos_j, calculated in the same way as for the hemisphere. However, 
+		   since the probabilities are no longer the same for every sample, we know divide the individual sample's results by the pdf returned by sample_L. Finally, as before, we average 
+		   all the samples and return that as the estimated lighting of the intersection point. 
 		</p>
 		<p>Spheres with hemisphere</p>
 		<img src="task3spheresHemisphere.png" alt="spheres h">
@@ -128,25 +129,24 @@
 		<img src="task3bunnyl64.png" alt="bunny 64 1">
 		<p></p>
 		<p>The noise goes down as the number of light rays goes up, as expected.</p>
-		<p>Although uniform hemisphere sampling and importance sampling using the lights get their estimates in similar ways, ultimately the lighting sampling works much better. Since <br>
-		   hemisphere sampling ends up testing so many rays that don't intersect any lighting, many of the samples aren't of much use to the estimation, meaning more samples on average <br>
-		   are needed to reduce the noise, in comparison to importance sampling, which insures that each of the samples is being taken from a light source. <br>
+		<p>Although uniform hemisphere sampling and importance sampling using the lights get their estimates in similar ways, ultimately the lighting sampling works much better. Since
+		   hemisphere sampling ends up testing so many rays that don't intersect any lighting, many of the samples aren't of much use to the estimation, meaning more samples on average 
+		   are needed to reduce the noise, in comparison to importance sampling, which insures that each of the samples is being taken from a light source.
 		</p>
 		<p></p>
 		<p>Task 4:<br>
-		   My implementation follows very closely to the one presented in lecture. First, we establish the probability of continuing when in the russian roulette termination stage as <br>
-		   continue_p = 1 - 0.35. It sets the base radiance to return as the radiance from one single bounce. We'll return this radiance plus the radiance of any possible future bounces. <br>
-		   Next, we use the sample_f function of the inputed isect's bsdf in order to generate an f for the calculation of possible bounces, as well as generating a random direction, wi, <br>
-		   along with the pdf for that wi. We transform that direction wi to world space by multiplying it by the transform matrix o2w, and then use that direction as well as the position <br>
-		   of the hit to create a new ray. This ray's min_t is set to EPS_F for error avoidance purposes, and its depth is set to the input ray's depth - 1 in order to simulate a bounce <br>
-		   having occurred. In order to avoid any overflow errors, if the input ray's depth is 0, we set the new ray's depth to also be 0. After the ray's construction, we check to see if <br>
-		   it intersects the bvh. If it does, then that means that we might possibly add in a bounce radiance term. Specifically, if the depth of the input ray is above 1, we will guarantee <br>
-		   bounce, which is adding f (calculated earlier) * cos_theta(wi) (where wi is in object space) / pdf (calculated earlier with f) * a recursive call to at_least_one_bounce_radiance <br>
-		   using the newly generated ray and intersect data as inputs. Furthermore, if the depth of the input ray is <= 1, we then start probabilistically adding bounce radiances using  <br>
-		   russian roulette termination and the continue_p calculated earlier. Specifically, if coin_flip(continue_p) is true, we add a bounce radiance calculated in the same way as above. <br>
-		   Crucially however, in that calculation, we also add another division by continue_p in order to keep the estimate unbiased. Once all the recursion has finished, the function will <br>
-		   output the radiance at the intersection with some random bounce radiance also added. <br>
-		   <br>
+		   My implementation follows very closely to the one presented in lecture. First, we establish the probability of continuing when in the russian roulette termination stage as 
+		   continue_p = 1 - 0.35. It sets the base radiance to return as the radiance from one single bounce. We'll return this radiance plus the radiance of any possible future bounces. 
+		   Next, we use the sample_f function of the inputed isect's bsdf in order to generate an f for the calculation of possible bounces, as well as generating a random direction, wi,
+		   along with the pdf for that wi. We transform that direction wi to world space by multiplying it by the transform matrix o2w, and then use that direction as well as the position 
+		   of the hit to create a new ray. This ray's min_t is set to EPS_F for error avoidance purposes, and its depth is set to the input ray's depth - 1 in order to simulate a bounce
+		   having occurred. In order to avoid any overflow errors, if the input ray's depth is 0, we set the new ray's depth to also be 0. After the ray's construction, we check to see if 
+		   it intersects the bvh. If it does, then that means that we might possibly add in a bounce radiance term. Specifically, if the depth of the input ray is above 1, we will guarantee
+		   bounce, which is adding f (calculated earlier) * cos_theta(wi) (where wi is in object space) / pdf (calculated earlier with f) * a recursive call to at_least_one_bounce_radiance 
+		   using the newly generated ray and intersect data as inputs. Furthermore, if the depth of the input ray is <= 1, we then start probabilistically adding bounce radiances using  
+		   russian roulette termination and the continue_p calculated earlier. Specifically, if coin_flip(continue_p) is true, we add a bounce radiance calculated in the same way as above. 
+		   Crucially however, in that calculation, we also add another division by continue_p in order to keep the estimate unbiased. Once all the recursion has finished, the function will 
+		   output the radiance at the intersection with some random bounce radiance also added. 
 		</p>
 		<p>Bench with global lighting</p>
 		<img src="task4bench1024s.png" alt="bench">
@@ -170,7 +170,7 @@
 		<img src="task4bunny1024s3m.png" alt="bunny 3m">
 		<p>Bunny m = 100</p>
 		<img src="task4bunny1024s100m.png" alt="bunny 100m">
-		<p> m = 0 wasn't really defined so I chose it to mean the zero bounce emission only. All of these images look nearly identical, which I believe should be expected behavior based <br>
+		<p> m = 0 wasn't really defined so I chose it to mean the zero bounce emission only. All of these images look nearly identical, which I believe should be expected behavior based 
 		    on how there's little light sources in this image and the diminishing amount of light from subsequent bounces. <br>
 		</p>
 		<p>Spheres s = 1</p>
