@@ -190,13 +190,13 @@
 		<p> As should be expected, as the number of samples goes up, the noise goes down. </p>
 		<p></p>
 		<p>Task 5:<br>
-		   The adaptive sampling is done by adding a few calculations during the radiance sample taking in raytrace_pixel. Outside of the loop for the ray generation, we initialize values <br>
-		   for the number of samples that have been taken, s1, and s2 all to 0. Generally, the function doesn't do anything new except increment the sampleNum on every loop, adds the sampled<br>
-		   radiance to s1, and adds the sampled radiance squared to s2. However, when the loop index % samplesPerBatch (meaning we check every samplesPerBatch iterations) and the sampleNum > 1, <br>
-		   we calculate a value I as outlined in the project spec. We define a variable sigma to equal the square root of ( 1 / (sampleNum - 1)) * (s2 - (s1^2 / sampleNum)). Then, we set I <br>
-		   to 1.96 * sigma / (sqrt(sampleNum)). Then, if I is less than or equal to the value maxTolerance * mu, where mu is equal to s1 / sampleNum, then we break out of the radiance estimation <br>
-		   loop. Then, when writing the radiance to the sample buffer, we divide the total sum of the radiance by sampleNum instead of ns_aa. Similarly, we set sampleCountBuffer's value at this <br>
-		   pixel to sampleNum. Conceptually, what this algorithm is doing is seeing if the estimation has converged to some value within our tolerance and terminates the estimation early if this <br>
+		   The adaptive sampling is done by adding a few calculations during the radiance sample taking in raytrace_pixel. Outside of the loop for the ray generation, we initialize values 
+		   for the number of samples that have been taken, s1, and s2 all to 0. Generally, the function doesn't do anything new except increment the sampleNum on every loop, adds the sampled
+		   radiance to s1, and adds the sampled radiance squared to s2. However, when the loop index % samplesPerBatch (meaning we check every samplesPerBatch iterations) and the sampleNum > 1, 
+		   we calculate a value I as outlined in the project spec. We define a variable sigma to equal the square root of ( 1 / (sampleNum - 1)) * (s2 - (s1^2 / sampleNum)). Then, we set I
+		   to 1.96 * sigma / (sqrt(sampleNum)). Then, if I is less than or equal to the value maxTolerance * mu, where mu is equal to s1 / sampleNum, then we break out of the radiance estimation
+		   loop. Then, when writing the radiance to the sample buffer, we divide the total sum of the radiance by sampleNum instead of ns_aa. Similarly, we set sampleCountBuffer's value at this
+		   pixel to sampleNum. Conceptually, what this algorithm is doing is seeing if the estimation has converged to some value within our tolerance and terminates the estimation early if this
 		   is the case.
 		</p>
 	        <p>Spheres s = 2048</p>
