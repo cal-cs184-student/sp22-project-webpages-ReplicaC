@@ -2,6 +2,90 @@
 	<head>
 	</head>
 	<body>
-		Project 3-2 here
+		<h1> Project 3-2 </h1>
+		<p>Overview:<br>
+		   In this project, we added different material types for objects that result in different lighting effects. From the two parts that I implemented, support for reflective, refractive
+		   and glass material was added, as well as for microfacet materials. Conceptually, parts 1 and 2 weren't vastly different from what was done in assignment 3-1, but included a decent
+		   amount more math in order to get these more complicated objects to work correctly.
+		</p>
+		<p></p>
+		<p> Part 1:<br>
+		    Tasks 1 and 2 involved implementing the mirror material BSDF. The implementation is straightforward, using the provided total reflection equation from lecture in the reflect() function,
+		    and then calling that function to calculate the wi and return the appropriate lighting. The refraction implementation is slightly more involved, but ultimately is just plugging in the
+		    equations provided in the spec. The only other things to note are to check whether the refraction is starting within the refractive object or outside of it and setting the eta accordingly,
+		    as well as checking for total internal reflection. The glass material implementation is just a combination of the previous two materials, probabilistically choosing whether to reflect or
+		    refract based off of the computed Schlick's reflection coefficient.
+		</p>
+		<p></p>
+		<p>Images rendered with 256 samples/pixel, 4 samples/light, and max ray depth = 7 unless stated otherwise</p>
+		<p>Spheres</p>
+		<img src="part1spheres.png" alt="spheres">
+		<p>Dragon</p>
+		<img src="part1dragon.png" alt="dragon">
+		<p>Lucy</p>
+	        <img src="part1lucy.png" alt="lucy">
+		<p>Spheres 0 rays</p>
+		<img src="part1spheres0rays.png" alt="spheres 0 rays">
+		<p>Spheres 1 rays</p>
+		<img src="part1spheres1rays.png" alt="spheres 1 rays">
+		<p>Spheres 2 rays</p>
+		<img src="part1spheres2rays.png" alt="spheres 2 rays">
+		<p>Spheres 3 rays</p>
+		<img src="part1spheres3rays.png" alt="spheres 3 rays">
+		<p>Spheres 4 rays</p>
+		<img src="part1spheres4rays.png" alt="spheres 4 rays">
+		<p>Spheres 5 rays</p>
+		<img src="part1spheres5rays.png" alt="spheres 5 rays">
+		<p>Spheres 100 rays</p>
+		<img src="part1spheres100rays.png" alt="spheres 100 rays">
+		<p></p>
+		<p>At 0 rays, the expected zero bounce illumination image is present, where only the light is lit. At 1 ray, from the balls we only see light that is totally reflected from the overhead light, and the 
+		   glass sphere has less of a reflection due to it probabilistically choosing between reflection and refraction as opposed to the mirror ball that always reflects. Moving from 2 rays forward, the spheres
+		   start taking on the expected appearances. The mirror ball shows the reflected surroundings since two bounces is the minimum for the light off of the surroundings to reach the viewing lens. However, the
+		   glass sphere remains very dark, showing only small amounts of reflection and refraction. This is because many samples are ending prematurely within the glass ball before reaching the camera because the
+		   the sampled light rays are bouncing around the ball with total internal reflection and not having enough bounces to leave the ball and be seen. When ray depth is increased, the glass ball takes on a 
+		   more expected appearance since those rays now have the chance to properly bounce around the inside of the ball.
+		</p>
+		<p> Part 2:<br>
+		    Part 2's implementation of microfacet surfaces is straightforward transcribing the equations described in the spec into the code. It's largely just bookkeeping to make sure no calculations go wrong. 
+		    The only portions not explicitly stated in the spec are translating from spherical coordinates to cartesian coordinates in order to get H from theta and phi, as well as reflecting wo across h. The cartesian
+		    transformation calculations were found on wikipedia, and the calculations for the reflection was sourced from helpful piazza threads. 
+		</p>
+		<p></p>
+		<p>Images rendered with 256 samples/pixel, 4 samples/light, and max ray depth = 7 unless stated otherwise</p>
+		<p>CBbunny</p>
+		<img src="part2CBbunny.png" alt="CBbunny">
+		<p>Dragon</p>
+		<img src="part2dragon.png" alt="dragon">
+		<p>Spheres</p>
+		<img src="part2spheres.png" alt="spheres">
+		<p>Bunny</p>
+		<img src="part2bunny.png" alt="bunny">
+		<p></p>
+		<p>CBdragon rendered with different alpha values</p>
+		<p>a = 0.005</p>
+		<img src="part2dragonA005.png" alt="dragon a005">
+		<p>a = 0.05</p>
+		<img src="part2dragonA05.png" alt="dragon a05">
+		<p>a = 0.25</p>
+		<img src="part2dragonA25.png" alt="dragon a25">
+		<p>a = 0.5</p>
+		<img src="part2dragon.png" alt="dragon a5">
+		<p>As the alpha values decrease, the object looks more reflective, while as it goes up, the material becomes more matte.</p>
+		<p>Next two images rendered with 64 samples/pixel and 1 sample/light</p>
+		<p>CBbunny with hemisphere sampling</p>
+		<img src="part2CBbunnyHemisphere.png" alt="bunny hemisphere">
+		<p>CBbunny with importance sampling</p>
+		<img src="part2CBbunnyS64L1.png" alt="bunny S64L1">
+		<p>The hemisphere sampling looks relatively correct, but it has significantly more noise than with the importance sampling.</p>
+		<p></p>
+		<p>Eta values for R, G, and B are 0.96709, 1.3573, 2.1893. K values are 6.2738, 5.2210, 5.0244. These values correspond to tungsten.
+		<img src="part2dragonTungsten.png" alt="bunny S64L1">
+		
+		
+		
+		
+			
+		    
 	</body>
 </html>
