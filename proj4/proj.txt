@@ -1,0 +1,13 @@
+pt 2.
+with low spring constant, cloth appears thinner and more loose, while with a high spring constant, the cloth
+becomes very stiff. Note that with very high spring constants, the material could start "pulling in on itself,"
+and even higher spring constants can lead to the cloth kind of clipping around everywhere.
+
+The effect that changing density exhibits seems opposite to that of adjusting the spring constant. High density
+makes a flowy looking cloth and a low density leads to a stiffer material.
+
+with low damping, the cloth stays constantly in motion, coming to a stand still extremely slowly. With high
+damping, the cloth moves very slowly, appearing as if it were submerged in water.
+
+
+
